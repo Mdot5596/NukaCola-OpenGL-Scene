@@ -1,17 +1,14 @@
 #include "scenebasic_uniform.h"
-
 #include <cstdio>
 #include <cstdlib>
-
 #include <string>
-using std::string;
 #include <sstream>
 #include <iostream>
-using std::cerr;
-using std::endl;
-
 #include "helper/glutils.h"
 #include "helper/texture.h"
+
+using std::cerr;
+using std::endl;
 
 using glm::vec3;
 using glm::vec4;
@@ -21,6 +18,7 @@ using glm::mat4;
 SceneBasic_Uniform::SceneBasic_Uniform() :
     tPrev(0), angle(90.0f), rotSpeed(glm::pi<float>()/8.0f), sky(100.0f), teapot(14,glm::mat4(1.0f))
 {
+    //Load Models:
     mesh = ObjMesh::load("media/soda can.obj", true);
 
 }
@@ -31,21 +29,18 @@ void SceneBasic_Uniform::initScene()
     glEnable(GL_DEPTH_TEST); // Enable depth testing
     projection = mat4(1.0f);
 
-
     // Load the HDR Cube Map for reflections
-    cubeTex = Texture::loadHdrCubeMap("media/texture/cube/pisa-hdr/pisa");  // Store the cube texture in the member variable
+    cubeTex = Texture::loadHdrCubeMap("media/texture/cube/pisa-hdr/pisa");  
 
 
+    //Applies the Skybox/cube tex
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTex);
 
+    //Applies the can tex
     glActiveTexture(GL_TEXTURE1);
     sodaCanTex = Texture::loadTexture("media/texture/nukacan.jpg");
-    if (sodaCanTex == 0) {
-        std::cerr << " Error: Failed to load nukacan texture!" << std::endl;
-    }
-
-    glBindTexture(GL_TEXTURE_CUBE_MAP, sodaCanTex);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, sodaCanTex);                //Can also use GL_TEXTURE_2D
 
 }
 
@@ -98,10 +93,13 @@ void SceneBasic_Uniform::render()
     prog.setUniform("WorldCameraPosition", cameraPos);
     prog.setUniform("MaterialColor", glm::vec4(0.5f, 0.5f, 0.5f, 0.5f));
     prog.setUniform("ReflectFactor", 0.85f);
-    prog.setUniform("TextureMap", 1); // Tell the shader to use texture unit 0
+    prog.setUniform("TextureMap", 1); // Tell the shader to use texture unit 1
 
 
     setMatrices(prog); // Apply model-view-projection transformations
+
+
+
 
     // Bind nukacan texture
     glActiveTexture(GL_TEXTURE1);
@@ -133,14 +131,8 @@ void SceneBasic_Uniform::resize(int w, int h)
 
 void SceneBasic_Uniform::setMatrices(GLSLProgram &p)
 {
-    mat4 mv = view * model; // Compute the Model-View matrix
+    mat4 mv = view * model;                // Compute the Model-View matrix
+    p.setUniform("ModelMatrix", model);    // Send Model-View matrix to the shader
+    p.setUniform("MVP", projection * mv); // Send Model-View-Projection matrix to the shader
 
-    // Send Model-View matrix to the shader
-    p.setUniform("ModelMatrix", model);
-
-    // Compute and send Normal Matrix (used for transforming normals correctly)
-  //  prog.setUniform("NormalMatrix", glm::mat3(vec3(mv[0]), vec3(mv[1]), vec3(mv[2])));
-
-    // Send Model-View-Projection matrix to the shader
-    p.setUniform("MVP", projection * mv);
 }
