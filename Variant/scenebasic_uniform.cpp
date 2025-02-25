@@ -26,24 +26,44 @@ SceneBasic_Uniform::SceneBasic_Uniform() :
 void SceneBasic_Uniform::initScene()
 {
     compile();
-    glEnable(GL_DEPTH_TEST); // Enable depth testing
+    glEnable(GL_DEPTH_TEST);
     projection = mat4(1.0f);
 
+    //SKYBOX:
+    // Load the HDR Cube Map (JJ VIDEO)
+    //cubeTex = Texture::loadHdrCubeMap("media/texture/cube/pisa-hdr/pisa");
+    // 
     // Load the HDR Cube Map for reflections
-    cubeTex = Texture::loadHdrCubeMap("media/texture/cube/pisa-hdr/pisa");  
-
-
-    //Applies the Skybox/cube tex
+    cubeTex = Texture::loadHdrCubeMap("media/texture/cube/skybox-hdr/skybox");
+    // Bind Skybox Texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTex);
+    //SKYBOX END
 
-    //Applies the can tex
+
+    //OBJECT:
+    // Load Nukacan Texture
     glActiveTexture(GL_TEXTURE1);
     sodaCanTex = Texture::loadTexture("media/texture/nukacan.jpg");
-    glBindTexture(GL_TEXTURE_CUBE_MAP, sodaCanTex);                //Can also use GL_TEXTURE_2D
+
+    if (sodaCanTex == 0) {
+        std::cerr << "Error loading nukacan.jpg!" << std::endl;
+    }
+
+    glBindTexture(GL_TEXTURE_2D, sodaCanTex);
+
+    // Set texture parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    // Generate Mipmaps
+    glGenerateMipmap(GL_TEXTURE_2D);
+    //OBJECT END
+
 
 }
-
 
 void SceneBasic_Uniform::compile()
 {
