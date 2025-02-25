@@ -18,7 +18,7 @@ Unpack the zip and place under c:/users/....
 I Created a repo where i completed and stored every weeks lab session , i saved each section of the lab (eg part 1,2,3), these labs helped complete certain aspects of this project such as *shader here* and *light method here*.
 ### Models
 - **Website:** [TurboSquid](https://www.turbosquid.com/)
-  - [Abandoned House Model and Texture](https://www.turbosquid.com/3d-models/abandoned-old-house-3d-2287730)
-  - 
+  - [NukaCola Can](https://www.turbosquid.com/3d-models/nuka-cola-can-1338119)
+  - [Skybox Gen](https://tools.wwwtyro.net/space-3d/index.html#animationSpeed=1&fov=80&nebulae=true&pointStars=true&resolution=256&seed=2stncnkuzc20&stars=true&sun=true)
 ### Libraries/Dependencies Used
 - [OpenGL](https://www.opengl.org/)
