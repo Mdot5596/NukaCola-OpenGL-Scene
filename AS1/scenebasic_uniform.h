@@ -16,7 +16,7 @@ class SceneBasic_Uniform : public Scene
 private:
     //  Torus torus;
     Plane plane;
-   // Teapot teapot;
+    // Teapot teapot;
     std::unique_ptr<ObjMesh> mesh;
     GLuint sodaCanTex;
     GLuint planeTex;

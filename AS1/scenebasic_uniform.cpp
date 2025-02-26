@@ -35,37 +35,50 @@ void SceneBasic_Uniform::initScene()
     projection = mat4(1.0f);
     angle = 0.0f;
 
+    //Spotlight Setup
+    vec3 spotPos = vec3(2.0f, 5.0f, 3.0f);             // Position of spotlight in world space
+    vec3 spotDir = normalize(vec3(-0.5f, -1.0f, 0.0f)); // Direction the spotlight points
+    float spotCutoff = glm::cos(glm::radians(1.0f));   // Convert cutoff angle (25°) to cosine
+    float spotExponent = 15.0f;                        // Controls edge softness
 
-    // Set shader uniforms varuiaubles
-    prog.setUniform("Light.L", vec3(0.9f));
-    prog.setUniform("Light.La", vec3(0.5f));
-    prog.setUniform("Fog.MaxDist", 20.0f);
-    prog.setUniform("Fog.MinDist", 1.0f);
+    // Set spotlight uniforms
+    prog.setUniform("Spot.Position", vec3(view * vec4(spotPos, 1.0f))); // Convert to camera space
+    prog.setUniform("Spot.Direction", mat3(view) * spotDir);            // Transform to camera space
+    prog.setUniform("Spot.L", vec3(1.0f, 1.0f, 1.0f));  // Light intensity
+    prog.setUniform("Spot.La", vec3(0.2f, 0.2f, 0.2f)); // Ambient light
+    prog.setUniform("Spot.Exponent", spotExponent);
+    prog.setUniform("Spot.Cutoff", spotCutoff);
+
+    //Material Properties
+    prog.setUniform("Material.Ka", vec3(0.2f, 0.2f, 0.2f));
+    prog.setUniform("Material.Kd", vec3(0.8f, 0.8f, 0.8f));
+    prog.setUniform("Material.Ks", vec3(1.0f, 1.0f, 1.0f));
+    prog.setUniform("Material.Shininess", 50.0f);
+
+    //Fog Properties
+    prog.setUniform("Fog.MinDist", 5.0f);
+    prog.setUniform("Fog.MaxDist", 25.0f);
     prog.setUniform("Fog.Color", vec3(0.5f, 0.5f, 0.5f));
 
-    //OBJECT:
-    // Load Nukacan Texture
+    //Texture Scaling
+    prog.setUniform("texScale", 1.0f);
+
+    //Load Textures
     glActiveTexture(GL_TEXTURE1);
     sodaCanTex = Texture::loadTexture("media/texture/nukacan.jpg");
     glBindTexture(GL_TEXTURE_2D, sodaCanTex);
-    // Set texture parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // Generate Mipmaps
     glGenerateMipmap(GL_TEXTURE_2D);
-    //OBJECT END
 
-
-
-    //Texture for plane
+    //Load Plane Texture
     glActiveTexture(GL_TEXTURE2);
     planeTex = Texture::loadTexture("media/texture/FALLOUTFLOOR.jpg");
-    glBindTexture(GL_TEXTURE_2D,planeTex);
-    //End
-
+    glBindTexture(GL_TEXTURE_2D, planeTex);
 }
+
 
 
 void SceneBasic_Uniform::compile()
@@ -87,7 +100,7 @@ void SceneBasic_Uniform::update(float t)
     float deltaT = t - tPrev;
     if (tPrev == 0.0f) deltaT = 0.0f;
     tPrev = t;
-    angle += 0.1f * deltaT;
+    angle += 0.3f * deltaT;
     if (angle > glm::two_pi<float>())angle -= glm::two_pi<float>();
 }
 
@@ -95,8 +108,8 @@ void SceneBasic_Uniform::render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear color & depth buffers
 
-    vec4 lightPos = vec4(10.0f * cos(angle), 10.0f, 10.0f * sin(angle), 1.0f);
-    prog.setUniform("Light.Position", vec4(view * lightPos));
+    vec4 spotPos = vec4(10.0f * cos(angle), 10.0f, 10.0f * sin(angle), 1.0f);
+    prog.setUniform("Spot.Position", vec3(view * spotPos));
 
     /*
     prog.setUniform("Material.Kd", vec3(0.2f, 0.55f, 0.9f));
@@ -115,7 +128,7 @@ void SceneBasic_Uniform::render()
         dist += 7.0f;
     }
     */
-    
+
     //NOT SURE IF I EVEN AM USING THIS
     prog.setUniform("Material.Kd", vec3(0.7f, 0.7f, 0.7f));
     prog.setUniform("Material.Ks", vec3(0.0f, 0.0f, 0.0f));
@@ -134,18 +147,14 @@ void SceneBasic_Uniform::render()
     //
 
     // Bind nukacan texture
+    // Render Soda Can (with spotlight effect)
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, sodaCanTex);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glGenerateMipmap(GL_TEXTURE_2D);
     model = mat4(1.0f);
-    model = glm::translate(model, vec3(0.0f, 0.6f, 0.0f)); 
+    model = glm::translate(model, vec3(0.0f, 0.6f, 0.0f));
     setMatrices();
-    prog.setUniform("texScale", 1.0f); //scale for soda can
-    mesh->render();;
+    prog.setUniform("texScale", 1.0f);
+    mesh->render();
     //
 }
 
