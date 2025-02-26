@@ -19,6 +19,7 @@ private:
    // Teapot teapot;
     std::unique_ptr<ObjMesh> mesh;
     GLuint sodaCanTex;
+    GLuint planeTex;
     float tPrev;
     float angle;
     GLSLProgram prog;

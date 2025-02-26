@@ -37,30 +37,34 @@ void SceneBasic_Uniform::initScene()
 
 
     // Set shader uniforms varuiaubles
-
     prog.setUniform("Light.L", vec3(0.9f));
     prog.setUniform("Light.La", vec3(0.5f));
-
     prog.setUniform("Fog.MaxDist", 20.0f);
     prog.setUniform("Fog.MinDist", 1.0f);
     prog.setUniform("Fog.Color", vec3(0.5f, 0.5f, 0.5f));
 
-     //OBJECT:
-     // Load Nukacan Texture
+    //OBJECT:
+    // Load Nukacan Texture
     glActiveTexture(GL_TEXTURE1);
     sodaCanTex = Texture::loadTexture("media/texture/nukacan.jpg");
-
     glBindTexture(GL_TEXTURE_2D, sodaCanTex);
-
     // Set texture parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
     // Generate Mipmaps
     glGenerateMipmap(GL_TEXTURE_2D);
     //OBJECT END
+
+
+
+    //Texture for plane
+    glActiveTexture(GL_TEXTURE2);
+    planeTex = Texture::loadTexture("media/texture/FALLOUTFLOOR.jpg");
+    glBindTexture(GL_TEXTURE_2D,planeTex);
+    //End
+
 }
 
 
@@ -112,38 +116,35 @@ void SceneBasic_Uniform::render()
     }
     */
     
+    //NOT SURE IF I EVEN AM USING THIS
     prog.setUniform("Material.Kd", vec3(0.7f, 0.7f, 0.7f));
     prog.setUniform("Material.Ks", vec3(0.0f, 0.0f, 0.0f));
     prog.setUniform("Material.Ka", vec3(0.2f, 0.2f, 0.2f));
     prog.setUniform("Material.Shininess", 180.0f);
-    prog.setUniform("TextureMap", 1); // Tell the shader to use texture unit 1
+    //
 
+    //Rendering plane
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, planeTex);
     model = mat4(1.0f);
     model = translate(model, vec3(0.0f, -1.0f, 0.0f));
     setMatrices();
     plane.render();
-
+    //
 
     // Bind nukacan texture
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, sodaCanTex);
-
-    // Ensure the texture has a defined base level
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-    // Generate mipmaps (fixes "undefined base level" issue)
     glGenerateMipmap(GL_TEXTURE_2D);
-
-    // Reset model matrix for the soda can
     model = mat4(1.0f);
-    model = glm::translate(model, vec3(0.0f, 0.6f, 0.0f)); // Keep soda can at original position
+    model = glm::translate(model, vec3(0.0f, 0.6f, 0.0f)); 
     setMatrices();
     mesh->render();;
-
-    glBindTexture(GL_TEXTURE_2D, 0);
+    //
 }
 
 
