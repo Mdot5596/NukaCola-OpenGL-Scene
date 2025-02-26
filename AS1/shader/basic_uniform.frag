@@ -1,7 +1,6 @@
 #version 460
 
 in vec2 TexCoords;                                               // Receiving texture coordinates from the vertex shader
-
 in vec3 Position;
 in vec3 Normal;
 
@@ -32,6 +31,8 @@ uniform struct FogInfo
 
 }Fog;
 
+uniform float texScale;
+
 
 vec3 blinnPhong ( vec3 position, vec3 n)
 {
@@ -59,7 +60,8 @@ void main()
     vec3 shadeColor = blinnPhong(Position, normalize(Normal));
 
     // Sample texture color
-    vec4 texColor = texture(TextureMap, TexCoords);
+    vec4 texColor = texture(TextureMap, TexCoords * texScale);
+
 
     // Mix shading with texture color
     vec3 finalColor = mix(Fog.Color, shadeColor * texColor.rgb, fogFactor);

@@ -129,6 +129,7 @@ void SceneBasic_Uniform::render()
     model = mat4(1.0f);
     model = translate(model, vec3(0.0f, -1.0f, 0.0f));
     setMatrices();
+    prog.setUniform("texScale", 5.0f); //Scale texture for plane
     plane.render();
     //
 
@@ -143,6 +144,7 @@ void SceneBasic_Uniform::render()
     model = mat4(1.0f);
     model = glm::translate(model, vec3(0.0f, 0.6f, 0.0f)); 
     setMatrices();
+    prog.setUniform("texScale", 1.0f); //scale for soda can
     mesh->render();;
     //
 }
