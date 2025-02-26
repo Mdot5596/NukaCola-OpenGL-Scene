@@ -1,18 +1,19 @@
 #version 460
 
+in vec2 TexCoords;                                               // Receiving texture coordinates from the vertex shader
+
 in vec3 Position;
 in vec3 Normal;
 
 layout (location = 0) out vec4 FragColor;
-
-
-
+layout (binding=1) uniform sampler2D TextureMap;                  // Nukacan texture
 
 uniform struct LightInfo {
    vec4 Position;
    vec3 La;
    vec3 L;
-} Lights[3]; 
+
+} Light; 
 
 
 uniform struct MaterialInfo{
@@ -23,30 +24,45 @@ uniform struct MaterialInfo{
 
 }Material;
 
-vec3 phongModel ( int light, vec3 position, vec3 n)
+uniform struct FogInfo
 {
-    vec3 ambient=Lights[light].La*Material.Ka;
+  float MaxDist;
+  float MinDist;
+  vec3 Color;
 
-    vec3 s=normalize(vec3(Lights[light].Position.xyz)-position);
+}Fog;
+
+
+vec3 blinnPhong ( vec3 position, vec3 n)
+{
+    vec3 diffuse=vec3(0), spec=vec3(0);
+    vec3 ambient=Light.La*Material.Ka;
+    vec3 s=normalize(Light.Position.xyz-position);
     float sDotN=max(dot(s,n),0.0);
-    vec3 diffuse=Material.Kd*sDotN;
-
-    vec3 spec=vec3(0.0);
+    diffuse=Material.Kd*sDotN;
     if (sDotN>0.0)
-    {
+     {
     vec3 v=normalize(-position.xyz);
-    vec3 r=reflect(-s,n);
-    spec=Material.Ks*pow(max(dot(r,v),0.0),Material.Shininess);
-    }
-    return ambient+(diffuse+spec)*Lights[light].L;
+    vec3 h=normalize(v+s);
+    spec=Material.Ks*pow(max(dot(h,n),0.0),Material.Shininess);
+      }
+    return ambient+(diffuse+spec)*Light.L;
 }
 
 void main()
 {
+    float dist = abs(Position.z);
+    float fogFactor = (Fog.MaxDist - dist) / (Fog.MaxDist - Fog.MinDist);
+    fogFactor = clamp(fogFactor, 0.0, 1.0);
 
-   vec3 Colour=vec3(0.0);
-   for (int i=0;i<3;i++)
-    Colour+=phongModel(i, Position,Normal);
+    // Compute shading
+    vec3 shadeColor = blinnPhong(Position, normalize(Normal));
 
-    FragColor = vec4(Colour, 1.0);
+    // Sample texture color
+    vec4 texColor = texture(TextureMap, TexCoords);
+
+    // Mix shading with texture color
+    vec3 finalColor = mix(Fog.Color, shadeColor * texColor.rgb, fogFactor);
+
+    FragColor = vec4(finalColor, texColor.a); // Preserve texture alpha
 }
