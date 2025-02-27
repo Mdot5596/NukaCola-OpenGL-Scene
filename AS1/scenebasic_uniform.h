@@ -20,6 +20,7 @@ private:
     std::unique_ptr<ObjMesh> mesh;
     GLuint sodaCanTex;
     GLuint planeTex;
+    GLuint mixTex;
     float tPrev;
     float angle;
     GLSLProgram prog;

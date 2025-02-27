@@ -38,8 +38,8 @@ void SceneBasic_Uniform::initScene()
     //Spotlight Setup
     vec3 spotPos = vec3(2.0f, 5.0f, 3.0f);             // Position of spotlight in world space
     vec3 spotDir = normalize(vec3(-0.5f, -1.0f, 0.0f)); // Direction the spotlight points
-    float spotCutoff = glm::cos(glm::radians(1.0f));   // Convert cutoff angle (25°) to cosine
-    float spotExponent = 15.0f;                        // Controls edge softness
+    float spotCutoff = glm::cos(glm::radians(1.0f));   // Convert cutoff angle (25) to cosine
+    float spotExponent = 0.0f;                        // Controls edge softness  SET TO 0 IF I WANT TO ACC SEE LOL
 
     // Set spotlight uniforms
     prog.setUniform("Spot.Position", vec3(view * vec4(spotPos, 1.0f))); // Convert to camera space
@@ -62,6 +62,7 @@ void SceneBasic_Uniform::initScene()
 
     //Texture Scaling
     prog.setUniform("texScale", 1.0f);
+    prog.setUniform("mixFactor", 0.5f);  // Adjust this value to control blending
 
     //Load Textures
     glActiveTexture(GL_TEXTURE1);
@@ -73,10 +74,16 @@ void SceneBasic_Uniform::initScene()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glGenerateMipmap(GL_TEXTURE_2D);
 
+
     //Load Plane Texture
     glActiveTexture(GL_TEXTURE2);
     planeTex = Texture::loadTexture("media/texture/FALLOUTFLOOR.jpg");
     glBindTexture(GL_TEXTURE_2D, planeTex);
+
+    //Mix Texture 
+    glActiveTexture(GL_TEXTURE2);
+    mixTex = Texture::loadTexture("media/texture/moss.png");
+    glBindTexture(GL_TEXTURE_2D, mixTex);
 }
 
 
@@ -136,6 +143,7 @@ void SceneBasic_Uniform::render()
     prog.setUniform("Material.Shininess", 180.0f);
     //
 
+
     //Rendering plane
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, planeTex);
@@ -156,6 +164,12 @@ void SceneBasic_Uniform::render()
     prog.setUniform("texScale", 1.0f);
     mesh->render();
     //
+
+    //Apply the moss mix tex
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, mixTex);
+
+
 }
 
 

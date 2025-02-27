@@ -5,7 +5,9 @@ in vec3 Position;    // Fragment position in camera space
 in vec3 Normal;      // Normal vector
 
 layout(location = 0) out vec4 FragColor;
-layout(binding = 1) uniform sampler2D TextureMap;  // Texture
+layout(binding = 1) uniform sampler2D TextureMap;        // Texture
+layout(binding = 2) uniform sampler2D SecondTextureMap;  // Second texture
+uniform float mixFactor;                                 // Blend factor (0.0 = first texture, 1.0 = second texture)
 
 // Light struct
 uniform struct SpotLightInfo {
@@ -73,14 +75,18 @@ void main() {
     float fogFactor = (Fog.MaxDist - dist) / (Fog.MaxDist - Fog.MinDist);
     fogFactor = clamp(fogFactor, 0.0, 1.0);
 
+    // Sample both textures
+    vec4 texColor1 = texture(TextureMap, TexCoords * texScale);
+    vec4 texColor2 = texture(SecondTextureMap, TexCoords * texScale);
+
+    // Mix textures based on mixFactor (0.0 = only texColor1, 1.0 = only texColor2)
+    vec4 blendedTex = mix(texColor1, texColor2, mixFactor);
+
     // Compute shading
     vec3 shadeColor = blinnPhongSpot(Position, normalize(Normal));
 
-    // Sample texture color
-    vec4 texColor = texture(TextureMap, TexCoords * texScale);
+    // Final color with shading and fog
+    vec3 finalColor = mix(Fog.Color, shadeColor * blendedTex.rgb, fogFactor);
 
-    // Mix shading with texture color
-    vec3 finalColor = mix(Fog.Color, shadeColor * texColor.rgb, fogFactor);
-
-    FragColor = vec4(finalColor, texColor.a); // Preserve texture alpha
+    FragColor = vec4(finalColor, blendedTex.a); // Preserve texture alpha
 }
