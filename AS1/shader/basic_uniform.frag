@@ -7,7 +7,10 @@ in vec3 Normal;      // Normal vector
 layout(location = 0) out vec4 FragColor;
 layout(binding = 1) uniform sampler2D TextureMap;        // Texture
 layout(binding = 2) uniform sampler2D SecondTextureMap;  // Second texture
+uniform float texScale;
 uniform float mixFactor;                                 // Blend factor (0.0 = first texture, 1.0 = second texture)
+uniform bool UseSecondTexture;                           // Weather the obj should be second texed or not
+
 
 // Light struct
 uniform struct SpotLightInfo {
@@ -34,7 +37,6 @@ uniform struct FogInfo {
     vec3 Color;
 } Fog;
 
-uniform float texScale;
 
 vec3 blinnPhongSpot(vec3 position, vec3 n) {
     // Ambient component
@@ -70,23 +72,28 @@ vec3 blinnPhongSpot(vec3 position, vec3 n) {
     return ambient;
 }
 
-void main() {
+void main() 
+{
     float dist = abs(Position.z);
     float fogFactor = (Fog.MaxDist - dist) / (Fog.MaxDist - Fog.MinDist);
     fogFactor = clamp(fogFactor, 0.0, 1.0);
 
-    // Sample both textures
+    // Sample first texture
     vec4 texColor1 = texture(TextureMap, TexCoords * texScale);
-    vec4 texColor2 = texture(SecondTextureMap, TexCoords * texScale);
-
-    // Mix textures based on mixFactor (0.0 = only texColor1, 1.0 = only texColor2)
-    vec4 blendedTex = mix(texColor1, texColor2, mixFactor);
+    
+    // Sample and mix second texture **only if UseSecondTexture is true**
+    vec4 finalTex = texColor1;  // Default to first texture
+    if (UseSecondTexture) {
+        vec4 texColor2 = texture(SecondTextureMap, TexCoords * texScale);
+        finalTex = mix(texColor1, texColor2, 0.5); // 50-50 mix for the can
+    }
 
     // Compute shading
     vec3 shadeColor = blinnPhongSpot(Position, normalize(Normal));
 
     // Final color with shading and fog
-    vec3 finalColor = mix(Fog.Color, shadeColor * blendedTex.rgb, fogFactor);
+    vec3 finalColor = mix(Fog.Color, shadeColor * finalTex.rgb, fogFactor);
 
-    FragColor = vec4(finalColor, blendedTex.a); // Preserve texture alpha
+    FragColor = vec4(finalColor, finalTex.a); // Preserve texture alpha
 }
+

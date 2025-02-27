@@ -82,7 +82,7 @@ void SceneBasic_Uniform::initScene()
 
     //Mix Texture 
     glActiveTexture(GL_TEXTURE2);
-    mixTex = Texture::loadTexture("media/texture/moss.png");
+    mixTex = Texture::loadTexture("media/texture/moss.jpg");
     glBindTexture(GL_TEXTURE_2D, mixTex);
 }
 
@@ -151,6 +151,7 @@ void SceneBasic_Uniform::render()
     model = translate(model, vec3(0.0f, -1.0f, 0.0f));
     setMatrices();
     prog.setUniform("texScale", 5.0f); //Scale texture for plane
+    prog.setUniform("UseSecondTexture", false);
     plane.render();
     //
 
@@ -162,6 +163,7 @@ void SceneBasic_Uniform::render()
     model = glm::translate(model, vec3(0.0f, 0.6f, 0.0f));
     setMatrices();
     prog.setUniform("texScale", 1.0f);
+    prog.setUniform("UseSecondTexture", true);
     mesh->render();
     //
 
