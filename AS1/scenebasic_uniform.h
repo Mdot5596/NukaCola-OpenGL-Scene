@@ -10,6 +10,8 @@
 #include "glm/glm.hpp"
 #include "helper/plane.h"
 #include "helper/objmesh.h"
+#include "helper/cube.h"
+#include "helper/skybox.h"
 
 class SceneBasic_Uniform : public Scene
 {
@@ -19,6 +21,8 @@ private:
     // Teapot teapot;
     std::unique_ptr<ObjMesh> mesh;
     GLuint sodaCanTex;
+    GLuint cubeTex;
+    SkyBox sky;
     GLuint planeTex;
     GLuint mixTex;
     float tPrev;

@@ -3,8 +3,10 @@
 in vec2 TexCoords;   // Receiving texture coordinates from the vertex shader
 in vec3 Position;    // Fragment position in camera space
 in vec3 Normal;      // Normal vector
+in vec3 Vec;
 
 layout(location = 0) out vec4 FragColor;
+layout(binding = 0) uniform samplerCube SkyBoxTex;
 layout(binding = 1) uniform sampler2D TextureMap;        // Texture
 layout(binding = 2) uniform sampler2D SecondTextureMap;  // Second texture
 uniform float texScale;
@@ -74,6 +76,9 @@ vec3 blinnPhongSpot(vec3 position, vec3 n) {
 
 void main() 
 {
+   //Skybox
+   vec3 texColor=texture(SkyBoxTex, normalize(Vec)).rgb;
+   
     float dist = abs(Position.z);
     float fogFactor = (Fog.MaxDist - dist) / (Fog.MaxDist - Fog.MinDist);
     fogFactor = clamp(fogFactor, 0.0, 1.0);
@@ -96,4 +101,3 @@ void main()
 
     FragColor = vec4(finalColor, finalTex.a); // Preserve texture alpha
 }
-

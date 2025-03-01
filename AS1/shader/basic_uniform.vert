@@ -7,6 +7,7 @@ layout(location = 2) in vec2 VertexTexCoord;  // Position of the vertex
 out vec2 TexCoords;                           // Pass texture coordinates to fragment shader
 out vec3 Position;
 out vec3 Normal;
+out vec3 Vec;
 
 uniform mat4 ModelViewMatrix;    // Model-View matrix
 uniform mat3 NormalMatrix;       // Normal transformation matrix
@@ -21,6 +22,7 @@ void main()
 
    TexCoords = VertexTexCoord;
 
+   Vec = VertexPosition; 
    gl_Position = MVP*vec4(VertexPosition,1.0);
 
 }

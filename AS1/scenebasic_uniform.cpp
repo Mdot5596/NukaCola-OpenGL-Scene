@@ -16,7 +16,7 @@ using glm::mat3;
 using glm::mat4;
 
 SceneBasic_Uniform::SceneBasic_Uniform() :
-    tPrev(0), plane(50.0f, 50.0f, 1, 1)// teapot(14, glm::mat4(1.0f))
+    tPrev(0), plane(50.0f, 50.0f, 1, 1), sky(100.0f)// teapot(14, glm::mat4(1.0f))
 {
     //Load Models:
     mesh = ObjMesh::load("media/soda can.obj", true);
@@ -56,13 +56,18 @@ void SceneBasic_Uniform::initScene()
     prog.setUniform("Material.Shininess", 50.0f);
 
     //Fog Properties
-    prog.setUniform("Fog.MinDist", 5.0f);
+    prog.setUniform("Fog.MinDist", 5.0f); //5 and 25
     prog.setUniform("Fog.MaxDist", 25.0f);
     prog.setUniform("Fog.Color", vec3(0.5f, 0.5f, 0.5f));
 
     //Texture Scaling
     prog.setUniform("texScale", 1.0f);
     prog.setUniform("mixFactor", 0.5f);  // Adjust this value to control blending
+
+    //Load Skybox
+    GLuint CubeTex = Texture::loadHdrCubeMap("media/texture/cube/skybox-hdr/skybox");
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTex);
 
     //Load Textures
     glActiveTexture(GL_TEXTURE1);
@@ -118,23 +123,14 @@ void SceneBasic_Uniform::render()
     vec4 spotPos = vec4(10.0f * cos(angle), 10.0f, 10.0f * sin(angle), 1.0f);
     prog.setUniform("Spot.Position", vec3(view * spotPos));
 
-    /*
-    prog.setUniform("Material.Kd", vec3(0.2f, 0.55f, 0.9f));
-    prog.setUniform("Material.Ks", vec3(0.95f, 0.95f, 0.95f));
-    prog.setUniform("Material.Ka", vec3(0.2f * 0.3f, 0.55f * 0.3f, 0.9f * 0.3f));
-    prog.setUniform("Material.Shininess", 100.0f);                 // Higher = sharper highlight
+    //DRAW sKY
+    //   vec3 cameraPos = vec3(-1.0f, 0.25f, 2.0f);
+    //   view = glm::lookAt(cameraPos, vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+    prog.use();
+    model = mat4(1.0f);
+    setMatrices();
+    sky.render();
 
-    float dist = 0.0f;
-    for (int i = 0; i < 5; i++)
-    {
-        model = mat4(1.0f);
-        model = glm::translate(model, vec3(dist * 0.6f - 1.0f, 0.0f, -dist));
-        model = glm::rotate(model, glm::radians(-90.0f), vec3(1.0f, 0.0f, 0.0f));
-        setMatrices(); // Apply model-view-projection transformations
-       // teapot.render(); // Render the torus object
-        dist += 7.0f;
-    }
-    */
 
     //NOT SURE IF I EVEN AM USING THIS
     prog.setUniform("Material.Kd", vec3(0.7f, 0.7f, 0.7f));
@@ -181,7 +177,9 @@ void SceneBasic_Uniform::resize(int w, int h)
     width = w;
     height = h;
     projection = glm::perspective(glm::radians(70.0f), (float)w / h, 0.3f, 100.0f);
+
 }
+
 
 void SceneBasic_Uniform::setMatrices()
 {
