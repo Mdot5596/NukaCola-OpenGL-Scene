@@ -6,13 +6,14 @@ in vec3 Normal;
 in vec3 Vec;
 
 layout(location = 0) out vec4 FragColor;
-layout(binding = 0) uniform samplerCube SkyBoxTex;
+layout(binding = 0) uniform samplerCube SkyBoxTex; //maybe change to 3
 layout(binding = 1) uniform sampler2D TextureMap;
 layout(binding = 2) uniform sampler2D SecondTextureMap;
 
 uniform float texScale;
 uniform float mixFactor;
 uniform bool UseSecondTexture;
+uniform bool IsSkybox;
 
 uniform mat4 ViewMatrix;  
 
@@ -78,10 +79,13 @@ vec3 blinnPhongSpot(vec3 position, vec3 n)
 
 void main() 
 {
-    vec3 texColor = texture(SkyBoxTex, normalize(Vec)).rgb;
-    FragColor = vec4(texColor, 1.0);
+    if (IsSkybox) {
+        vec3 texColor = texture(SkyBoxTex, normalize(Vec)).rgb;
+        FragColor = vec4(texColor, 1.0);
+        return;
+    }
 
-    float dist = abs(Position.z);
+    float dist = length(Position);
     float fogFactor = (Fog.MaxDist - dist) / (Fog.MaxDist - Fog.MinDist);
     fogFactor = clamp(fogFactor, 0.0, 1.0);
 

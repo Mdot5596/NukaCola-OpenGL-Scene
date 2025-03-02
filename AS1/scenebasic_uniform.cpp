@@ -56,6 +56,11 @@ void SceneBasic_Uniform::initScene()
     float spotCutoff = glm::cos(glm::radians(1.0f));   // Convert cutoff angle (25) to cosine
     float spotExponent = 0.0f;                        // Controls edge softness  SET TO 0 IF I WANT TO ACC SEE LOL
 
+    cubeTex = Texture::loadHdrCubeMap("media/texture/cube/skybox-hdr/skybox");
+    prog.setUniform("SkyBoxTex", 0);  // Bind to texture unit 0
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTex);
+
     // Set spotlight uniforms
     prog.setUniform("Spot.Position", spotPos);  // world space
     prog.setUniform("Spot.Direction", spotDir); // world space
@@ -78,11 +83,6 @@ void SceneBasic_Uniform::initScene()
     //Texture Scaling
     prog.setUniform("texScale", 1.0f);
     prog.setUniform("mixFactor", 0.5f);  // Adjust this value to control blending
-
-    //Load Skybox
-    GLuint CubeTex = Texture::loadHdrCubeMap("media/texture/cube/skybox-hdr/skybox");
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTex);
 
     //Load Textures
     glActiveTexture(GL_TEXTURE1);
@@ -147,42 +147,38 @@ void SceneBasic_Uniform::render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear color & depth buffers
 
+    // Update spotlight uniforms
     vec3 spotPos = vec3(10.0f * cos(angle), 10.0f, 10.0f * sin(angle));
     prog.setUniform("Spot.Position", spotPos);
     prog.setUniform("ViewMatrix", view);
 
+    // DRAW SKYBOX:
+    // Bind cubemap texture using the member variable 'cubeTex'
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTex);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL, 0);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    //DRAW sKY
-    //   vec3 cameraPos = vec3(-1.0f, 0.25f, 2.0f);
-    //   view = glm::lookAt(cameraPos, vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
-    // 
     prog.use();
     model = mat4(1.0f);
     setMatrices();
-    sky.render();
+    prog.setUniform("IsSkybox", true);
+    sky.render();  // Draw the skybox
 
+    // Reset to normal shading for other objects
+    prog.setUniform("IsSkybox", false);
 
-    //NOT SURE IF I EVEN AM USING THIS
-    prog.setUniform("Material.Kd", vec3(0.7f, 0.7f, 0.7f));
-    prog.setUniform("Material.Ks", vec3(0.0f, 0.0f, 0.0f));
-    prog.setUniform("Material.Ka", vec3(0.2f, 0.2f, 0.2f));
-    prog.setUniform("Material.Shininess", 180.0f);
-    //
-
-
-    //Rendering plane
+    // Render other scene objects (plane, soda can, etc.)
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, planeTex);
     model = mat4(1.0f);
     model = translate(model, vec3(0.0f, -1.0f, 0.0f));
     setMatrices();
-    prog.setUniform("texScale", 5.0f); //Scale texture for plane
+    prog.setUniform("texScale", 5.0f);
     prog.setUniform("UseSecondTexture", false);
     plane.render();
-    //
 
-    // Bind nukacan texture
-    // Render Soda Can (with spotlight effect)
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, sodaCanTex);
     model = mat4(1.0f);
@@ -191,12 +187,10 @@ void SceneBasic_Uniform::render()
     prog.setUniform("texScale", 1.0f);
     prog.setUniform("UseSecondTexture", true);
     mesh->render();
-    //
 
-    //Apply the moss mix tex
+    // Bind moss mix texture for later usage
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, mixTex);
-
 }
 
 

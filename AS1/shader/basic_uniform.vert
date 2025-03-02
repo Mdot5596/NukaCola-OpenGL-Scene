@@ -22,7 +22,10 @@ void main()
 
    TexCoords = VertexTexCoord;
 
-   Vec = VertexPosition; 
+  // Vec = VertexPosition; 
+    Vec = (vec4(VertexPosition, 0.0)).xyz; // for static skybox in world space
+
+
    gl_Position = MVP*vec4(VertexPosition,1.0);
 
 }
