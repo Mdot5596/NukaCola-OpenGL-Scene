@@ -57,8 +57,8 @@ void SceneBasic_Uniform::initScene()
     float spotExponent = 0.0f;                        // Controls edge softness  SET TO 0 IF I WANT TO ACC SEE LOL
 
     // Set spotlight uniforms
-    prog.setUniform("Spot.Position", vec3(view * vec4(spotPos, 1.0f))); // Convert to camera space
-    prog.setUniform("Spot.Direction", mat3(view) * spotDir);            // Transform to camera space
+    prog.setUniform("Spot.Position", spotPos);  // world space
+    prog.setUniform("Spot.Direction", spotDir); // world space
     prog.setUniform("Spot.L", vec3(1.0f, 1.0f, 1.0f));  // Light intensity
     prog.setUniform("Spot.La", vec3(0.2f, 0.2f, 0.2f)); // Ambient light
     prog.setUniform("Spot.Exponent", spotExponent);
@@ -147,8 +147,10 @@ void SceneBasic_Uniform::render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear color & depth buffers
 
-    vec4 spotPos = vec4(10.0f * cos(angle), 10.0f, 10.0f * sin(angle), 1.0f);
-    prog.setUniform("Spot.Position", vec3(view * spotPos));
+    vec3 spotPos = vec3(10.0f * cos(angle), 10.0f, 10.0f * sin(angle));
+    prog.setUniform("Spot.Position", spotPos);
+    prog.setUniform("ViewMatrix", view);
+
 
     //DRAW sKY
     //   vec3 cameraPos = vec3(-1.0f, 0.25f, 2.0f);
@@ -158,7 +160,6 @@ void SceneBasic_Uniform::render()
     model = mat4(1.0f);
     setMatrices();
     sky.render();
-
 
 
     //NOT SURE IF I EVEN AM USING THIS
