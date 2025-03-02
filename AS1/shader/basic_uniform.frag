@@ -78,6 +78,7 @@ void main()
 {
    //Skybox
    vec3 texColor=texture(SkyBoxTex, normalize(Vec)).rgb;
+   FragColor = vec4(texColor, 1.0);
    
     float dist = abs(Position.z);
     float fogFactor = (Fog.MaxDist - dist) / (Fog.MaxDist - Fog.MinDist);

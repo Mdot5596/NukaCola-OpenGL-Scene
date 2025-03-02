@@ -27,9 +27,19 @@ private:
     GLuint mixTex;
     float tPrev;
     float angle;
-    GLSLProgram prog;
+    GLSLProgram prog, skyProg;
     void setMatrices();
     void compile();
+
+    // Camera and mouse variables
+    glm::vec3 cameraPosition;
+    glm::vec3 cameraFront;
+    glm::vec3 cameraUp;
+    float cameraYaw;
+    float cameraPitch;
+    bool mouseFirstEntry;
+    float cameraLastXPos;
+    float cameraLastYPos;
 
 
 public:
@@ -39,6 +49,10 @@ public:
     void update(float t);
     void render();
     void resize(int, int);
+
+    //Movement 
+    void handleKeyboardInput(float deltaTime);
+    void handleMouseInput();
 };
 
 #endif // SCENEBASIC_UNIFORM_H

@@ -3,16 +3,16 @@
   "WorkspaceRootPath": "D:\\Uni\\3015\\NukaCola-OpenGL-Scene\\Variant (reflection\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{2424A6AC-480B-441A-94EA-86C5C10C6ABF}|Project_Template.vcxproj|D:\\Uni\\3015\\NukaCola-OpenGL-Scene\\Variant (reflection\\scenebasic_uniform.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{2424A6AC-480B-441A-94EA-86C5C10C6ABF}|Project_Template.vcxproj|solutionrelative:scenebasic_uniform.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{2424A6AC-480B-441A-94EA-86C5C10C6ABF}|Project_Template.vcxproj|D:\\Uni\\3015\\NukaCola-OpenGL-Scene\\Variant (reflection\\scenebasic_uniform.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{2424A6AC-480B-441A-94EA-86C5C10C6ABF}|Project_Template.vcxproj|solutionrelative:scenebasic_uniform.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{2424A6AC-480B-441A-94EA-86C5C10C6ABF}|Project_Template.vcxproj|D:\\Uni\\3015\\NukaCola-OpenGL-Scene\\Variant (reflection\\shader\\basic_uniform.frag||{8B382828-6202-11D1-8870-0000F87579D2}",
       "RelativeMoniker": "D:0:0:{2424A6AC-480B-441A-94EA-86C5C10C6ABF}|Project_Template.vcxproj|solutionrelative:shader\\basic_uniform.frag||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2424A6AC-480B-441A-94EA-86C5C10C6ABF}|Project_Template.vcxproj|D:\\Uni\\3015\\NukaCola-OpenGL-Scene\\Variant (reflection\\scenebasic_uniform.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{2424A6AC-480B-441A-94EA-86C5C10C6ABF}|Project_Template.vcxproj|solutionrelative:scenebasic_uniform.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{2424A6AC-480B-441A-94EA-86C5C10C6ABF}|Project_Template.vcxproj|D:\\Uni\\3015\\NukaCola-OpenGL-Scene\\Variant (reflection\\shader\\basic_uniform.vert||{8B382828-6202-11D1-8870-0000F87579D2}",
@@ -26,7 +26,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
@@ -42,39 +42,39 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "basic_uniform.frag",
               "DocumentMoniker": "D:\\Uni\\3015\\NukaCola-OpenGL-Scene\\Variant (reflection\\shader\\basic_uniform.frag",
               "RelativeDocumentMoniker": "shader\\basic_uniform.frag",
               "ToolTip": "D:\\Uni\\3015\\NukaCola-OpenGL-Scene\\Variant (reflection\\shader\\basic_uniform.frag",
               "RelativeToolTip": "shader\\basic_uniform.frag",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAMAAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
               "WhenOpened": "2025-02-23T18:02:00.286Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "scenebasic_uniform.h",
               "DocumentMoniker": "D:\\Uni\\3015\\NukaCola-OpenGL-Scene\\Variant (reflection\\scenebasic_uniform.h",
               "RelativeDocumentMoniker": "scenebasic_uniform.h",
               "ToolTip": "D:\\Uni\\3015\\NukaCola-OpenGL-Scene\\Variant (reflection\\scenebasic_uniform.h",
               "RelativeToolTip": "scenebasic_uniform.h",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABgAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAABUAAAAAAAAAAAAAAB0AAAAdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2025-02-23T18:01:53.61Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "scenebasic_uniform.cpp",
               "DocumentMoniker": "D:\\Uni\\3015\\NukaCola-OpenGL-Scene\\Variant (reflection\\scenebasic_uniform.cpp",
               "RelativeDocumentMoniker": "scenebasic_uniform.cpp",
               "ToolTip": "D:\\Uni\\3015\\NukaCola-OpenGL-Scene\\Variant (reflection\\scenebasic_uniform.cpp",
               "RelativeToolTip": "scenebasic_uniform.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACkAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAD8AAAAAAAAAAAAAAFAAAAAbAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-02-23T18:01:45.308Z",
               "EditorCaption": ""

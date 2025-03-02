@@ -6,6 +6,9 @@
 #include <iostream>
 #include "helper/glutils.h"
 #include "helper/texture.h"
+#include "GLFW/glfw3.h"
+#include "glad/glad.h"
+
 
 using std::cerr;
 using std::endl;
@@ -16,7 +19,15 @@ using glm::mat3;
 using glm::mat4;
 
 SceneBasic_Uniform::SceneBasic_Uniform() :
-    tPrev(0), plane(50.0f, 50.0f, 1, 1), sky(100.0f)// teapot(14, glm::mat4(1.0f))
+    tPrev(0), 
+    plane(50.0f, 50.0f, 1, 1),
+    sky(100.0f),
+    cameraPosition(0.0f, 0.0f, 10.0f),
+    cameraFront(0.0f, 0.0f, -1.0f),
+    cameraUp(0.0f, 1.0f, 0.0f),
+    cameraYaw(-90.0f),
+    cameraPitch(0.0f),
+    mouseFirstEntry(true)
 {
     //Load Models:
     mesh = ObjMesh::load("media/soda can.obj", true);
@@ -29,14 +40,18 @@ void SceneBasic_Uniform::initScene()
     compile();
     glEnable(GL_DEPTH_TEST); // Enable depth testing
 
-    // Initialise model matrix
+    //Lock mouse to screen
+    GLFWwindow* Falloutscene = glfwGetCurrentContext();
+    glfwSetInputMode(Falloutscene, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    // MVP 
     model = mat4(1.0f);
-    view = glm::lookAt(vec3(0.0f, 4.0f, 6.0f), vec3(0.0f, 0.2f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+    view = glm::lookAt(vec3(0.0f, 6.0f, 12.0f), vec3(0.0f, 0.2f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
     projection = mat4(1.0f);
     angle = 0.0f;
 
     //Spotlight Setup
-    vec3 spotPos = vec3(2.0f, 5.0f, 3.0f);             // Position of spotlight in world space
+    vec3 spotPos = vec3(2.0f, 5.0f, 3.0f);              // Position of spotlight in world space
     vec3 spotDir = normalize(vec3(-0.5f, -1.0f, 0.0f)); // Direction the spotlight points
     float spotCutoff = glm::cos(glm::radians(1.0f));   // Convert cutoff angle (25) to cosine
     float spotExponent = 0.0f;                        // Controls edge softness  SET TO 0 IF I WANT TO ACC SEE LOL
@@ -98,6 +113,9 @@ void SceneBasic_Uniform::compile()
     try {
         prog.compileShader("shader/basic_uniform.vert");
         prog.compileShader("shader/basic_uniform.frag");
+        skyProg.compileShader("shader/skybox.vert");
+        skyProg.compileShader("shader/skybox.frag");
+        skyProg.link();
         prog.link();
         prog.use();
     }
@@ -109,12 +127,21 @@ void SceneBasic_Uniform::compile()
 
 void SceneBasic_Uniform::update(float t)
 {
-    float deltaT = t - tPrev;
-    if (tPrev == 0.0f) deltaT = 0.0f;
+    float deltaTime = t - tPrev;
+    if (tPrev == 0.0f) deltaTime = 0.0f;
     tPrev = t;
-    angle += 0.3f * deltaT;
-    if (angle > glm::two_pi<float>())angle -= glm::two_pi<float>();
+
+    angle += 0.3f * deltaTime;
+    if (angle > glm::two_pi<float>()) angle -= glm::two_pi<float>();
+
+    handleKeyboardInput(deltaTime);
+    handleMouseInput();
+
+    // Recalculate view matrix after inputs
+    view = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
+
 }
+
 
 void SceneBasic_Uniform::render()
 {
@@ -126,10 +153,12 @@ void SceneBasic_Uniform::render()
     //DRAW sKY
     //   vec3 cameraPos = vec3(-1.0f, 0.25f, 2.0f);
     //   view = glm::lookAt(cameraPos, vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+    // 
     prog.use();
     model = mat4(1.0f);
     setMatrices();
     sky.render();
+
 
 
     //NOT SURE IF I EVEN AM USING THIS
@@ -167,7 +196,6 @@ void SceneBasic_Uniform::render()
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, mixTex);
 
-
 }
 
 
@@ -194,3 +222,73 @@ void SceneBasic_Uniform::setMatrices()
     // Send Model-View-Projection matrix to the shader
     prog.setUniform("MVP", projection * mv);
 }
+
+void SceneBasic_Uniform::handleKeyboardInput(float deltaTime)
+{
+    GLFWwindow* Falloutscene = glfwGetCurrentContext();
+    const float movementSpeed = 5.0f * deltaTime;
+
+    if (glfwGetKey(Falloutscene, GLFW_KEY_W) == GLFW_PRESS)
+        cameraPosition += movementSpeed * cameraFront;
+
+    if (glfwGetKey(Falloutscene, GLFW_KEY_S) == GLFW_PRESS)
+        cameraPosition -= movementSpeed * cameraFront;
+
+    if (glfwGetKey(Falloutscene, GLFW_KEY_A) == GLFW_PRESS)
+        cameraPosition -= glm::normalize(glm::cross(cameraFront, cameraUp)) * movementSpeed;
+
+    if (glfwGetKey(Falloutscene, GLFW_KEY_D) == GLFW_PRESS)
+        cameraPosition += glm::normalize(glm::cross(cameraFront, cameraUp)) * movementSpeed;
+
+    if (glfwGetKey(Falloutscene, GLFW_KEY_SPACE) == GLFW_PRESS)
+        cameraPosition += movementSpeed * cameraUp;
+
+    if (glfwGetKey(Falloutscene, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+        cameraPosition -= movementSpeed * cameraUp;
+
+    if (glfwGetKey(Falloutscene, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(Falloutscene, true);
+}
+
+
+void SceneBasic_Uniform::handleMouseInput()
+{
+    GLFWwindow* Falloutscene = glfwGetCurrentContext();
+    double xpos, ypos;
+    glfwGetCursorPos(Falloutscene, &xpos, &ypos);
+
+    if (mouseFirstEntry)
+    {
+        cameraLastXPos = (float)xpos;
+        cameraLastYPos = (float)ypos;
+        mouseFirstEntry = false;
+    }
+
+    float xOffset = (float)xpos - cameraLastXPos;
+    float yOffset = cameraLastYPos - (float)ypos;
+    cameraLastXPos = (float)xpos;
+    cameraLastYPos = (float)ypos;
+
+    const float sensitivity = 0.025f;
+    xOffset *= sensitivity;
+    yOffset *= sensitivity;
+
+    cameraYaw += xOffset;
+    cameraPitch += yOffset;
+
+    if (cameraPitch > 89.0f)
+    {
+        cameraPitch = 89.0f;
+    }
+    else if (cameraPitch < -89.0f)
+    {
+        cameraPitch = -89.0f;
+    }
+
+    glm::vec3 direction;
+    direction.x = cos(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch));
+    direction.y = sin(glm::radians(cameraPitch));
+    direction.z = sin(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch));
+    cameraFront = glm::normalize(direction);
+}
+
