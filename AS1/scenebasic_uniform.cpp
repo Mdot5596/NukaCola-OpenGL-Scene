@@ -9,7 +9,6 @@
 #include "GLFW/glfw3.h"
 #include "glad/glad.h"
 
-
 using std::cerr;
 using std::endl;
 
@@ -19,7 +18,7 @@ using glm::mat3;
 using glm::mat4;
 
 SceneBasic_Uniform::SceneBasic_Uniform() :
-    tPrev(0), 
+    tPrev(0),
     plane(50.0f, 50.0f, 1, 1),
     sky(100.0f),
     cameraPosition(0.0f, 0.0f, 10.0f),
@@ -53,11 +52,11 @@ void SceneBasic_Uniform::initScene()
     //Spotlight Setup
     vec3 spotPos = vec3(2.0f, 5.0f, 3.0f);              // Position of spotlight in world space
     vec3 spotDir = normalize(vec3(-0.5f, -1.0f, 0.0f)); // Direction the spotlight points
-    float spotCutoff = glm::cos(glm::radians(1.0f));   // Convert cutoff angle (25) to cosine
+    float spotCutoff = glm::cos(glm::radians(25.0f));   // Convert cutoff angle (25) to cosine
     float spotExponent = 0.0f;                        // Controls edge softness  SET TO 0 IF I WANT TO ACC SEE LOL
 
     cubeTex = Texture::loadHdrCubeMap("media/texture/cube/skybox-hdr/skybox");
-    prog.setUniform("SkyBoxTex", 0);  // Bind to texture unit 0
+    prog.setUniform("SkyBoxTex", 0);  
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTex);
 
@@ -76,8 +75,8 @@ void SceneBasic_Uniform::initScene()
     prog.setUniform("Material.Shininess", 50.0f);
 
     //Fog Properties
-    prog.setUniform("Fog.MinDist", 5.0f); //5 and 25
-    prog.setUniform("Fog.MaxDist", 25.0f);
+    prog.setUniform("Fog.MinDist", 1.0f); //5 and 25
+    prog.setUniform("Fog.MaxDist", 1.0f);
     prog.setUniform("Fog.Color", vec3(0.5f, 0.5f, 0.5f));
 
     //Texture Scaling
@@ -152,8 +151,7 @@ void SceneBasic_Uniform::render()
     prog.setUniform("Spot.Position", spotPos);
     prog.setUniform("ViewMatrix", view);
 
-    // DRAW SKYBOX:
-    // Bind cubemap texture using the member variable 'cubeTex'
+  
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubeTex);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL, 0);
@@ -169,7 +167,6 @@ void SceneBasic_Uniform::render()
     // Reset to normal shading for other objects
     prog.setUniform("IsSkybox", false);
 
-    // Render other scene objects (plane, soda can, etc.)
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, planeTex);
     model = mat4(1.0f);
@@ -286,4 +283,3 @@ void SceneBasic_Uniform::handleMouseInput()
     direction.z = sin(glm::radians(cameraYaw)) * cos(glm::radians(cameraPitch));
     cameraFront = glm::normalize(direction);
 }
-
