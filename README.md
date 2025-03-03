@@ -76,7 +76,11 @@ if (UseSecondTexture) {
 ```
 
 ### Skybox
+Before i could render anything i had to convert my skybox textures into HDR files so the loader would be able to read them. I used a website called https://convertio.co/download/033be95f1ae5b9780b751f7d183d28eac6e158/ for this. 
 
+In the C++ code, the skybox is rendered by first binding the cube map texture to GL_TEXTURE0 and setting the "IsSkybox" uniform to true so that the shader samples from the cube map. After drawing the skybox geometry, the flag is reset to false, ensuring that the rest of the scene is rendered with the standard lighting and shading.
+
+In the fragment shader, the skybox is rendered separately by checking the IsSkybox flag. When true, the shader samples the cube map using the normalised direction vector, ensuring the background appears infinitely far away.
 
 
 ### Animation controls
